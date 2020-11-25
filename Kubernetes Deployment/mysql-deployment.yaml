@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: omeka-mysql
+  labels:
+    app: omeka
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: omeka
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: omeka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: omeka-mysql
+  labels:
+    app: omeka
+spec:
+  selector:
+    matchLabels:
+      app: omeka
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: omeka
+        tier: mysql
+      annotations:
+        backup.velero.io/backup-volumes: omeka-mysql-persistent-storage
+    spec:
+      containers:
+        - image: mysql:latest
+          name: mysql
+          env:
+            - name: MYSQL_DATABASE
+              value:
+            - name: MYSQL_USER
+              value:
+            - name: MYSQL_PASSWORD
+              value:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-passw
+                  key: password
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: omeka-mysql-persistent-storage
+              mountPath: /var/lib/mysql
+          securityContext:
+            privileged: true
+      volumes:
+        - name: omeka-mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+          # mysql-data:
+          #   driver: local
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: omeka-mysql
+#   labels:
+#     group: db
+# data:
+#   MYSQL_ROOT_PASSWORD: omeka
+#   MYSQL_DATABASE: omeka
+#   MYSQL_USER: omeka
+#   MYSQL_PASSWORD: omeka

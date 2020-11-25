@@ -1,0 +1,32 @@
+version: "2"
+
+services:
+  db:
+    image: mysql:latest #For MariaDB image mariadb:10.3.24
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: #Any password test@123
+      MYSQL_DATABASE: # Any db name for eg omeka
+      MYSQL_USER: # Any username you prefered for eg:omeka
+      MYSQL_PASSWORD: #Any password for eg omeka
+    # volumes:
+    # mysql-data:
+    #     driver: local
+
+  db_admin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    links:
+      - db:db
+    ports:
+      - "8080:80"
+
+  omeka-s:
+    image: sunny3p/omeka-s:latest
+    # links:
+    # - mysql
+    restart: always
+    volumes:
+      - ./app:/var/www/html/files
+    ports:
+      - 80:80

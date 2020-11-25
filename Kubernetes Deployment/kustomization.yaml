@@ -1,0 +1,8 @@
+secretGenerator:
+  - name: mysql-passw
+    literals:
+      - password=
+resources:
+  - mysql-deployment.yaml
+  - omeka-deployment.yaml
+  - php-deployment.yml

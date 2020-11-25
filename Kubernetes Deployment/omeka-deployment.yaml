@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: omeka
+  labels:
+    app: omeka
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: omeka
+    tier: frontend
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: omeka-pv-claim
+  labels:
+    app: omeka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 40Gi
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: omeka
+  labels:
+    app: omeka
+spec:
+  selector:
+    matchLabels:
+      app: omeka
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: omeka
+        tier: frontend
+      annotations:
+        backup.velero.io/backup-volumes: omeka-persistent-storage
+    spec:
+      containers:
+      - image: sunny3p/omeka-s:latest
+        name: omeka
+        ports:
+        - containerPort: 80
+          name: omeka
+        volumeMounts:
+        - name: omeka-persistent-storage
+          mountPath: /var/www/html/files
+        securityContext:
+          privileged: true
+      volumes:
+      - name: omeka-persistent-storage
+        persistentVolumeClaim:
+          claimName: omeka-pv-claim
+
