@@ -20,12 +20,14 @@ RUN apt-get update && \
     libpng-dev \
     libmemcached-dev \
     zlib1g-dev \
+    libzip-dev \
+    zip \
     imagemagick
 #Install php-extensions
 RUN pecl install mcrypt-1.0.3
 RUN docker-php-ext-enable mcrypt
 
-RUN docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql gd mysqli
+RUN docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql gd mysqli zip
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 
 #Clone omeka-s - replace with git clone...
