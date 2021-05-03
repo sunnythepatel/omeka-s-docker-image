@@ -8,7 +8,7 @@ LABEL maintainer_email2="sunny33p@gmail.com"
 
 WORKDIR /var/www/html
 # Install git ant and java
-ARG version=2.1.2
+ARG version=3.0.1
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
     git-core \
