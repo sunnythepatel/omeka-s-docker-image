@@ -11,5 +11,5 @@ set -e
 #     exec gosu postgres "$@"
 # fi
 chown -R www-data:www-data /var/www/html/files 
-
+python3 /var/www/html/database.py
 exec "$@"

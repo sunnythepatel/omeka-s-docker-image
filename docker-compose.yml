@@ -5,13 +5,13 @@ services:
     image: mysql:latest #For MariaDB image mariadb:10.3.24
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: #Any password test@123
-      MYSQL_DATABASE: # Any db name for eg omeka
-      MYSQL_USER: # Any username you prefered for eg:omeka
-      MYSQL_PASSWORD: #Any password for eg omeka
-    # volumes:
-    # mysql-data:
-    #     driver: local
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      #MYSQL_ROOT_PASSWORD: #Any password test@123
+    volumes:
+      - db:/var/lib/mysql
 
   db_admin:
     image: phpmyadmin/phpmyadmin:latest
@@ -30,3 +30,11 @@ services:
       - ./app:/var/www/html/files
     ports:
       - 80:80
+    environment:
+      user: : db
+      password: exampleuser
+      dbname: examplepass
+      host: exampledb
+
+volumes:
+  db:

@@ -38,14 +38,15 @@ ADD https://raw.githubusercontent.com/omeka/omeka-s/develop/.htaccess.dist /var/
 #enable the rewrite module of apache
 RUN a2enmod rewrite
 #Create a default php.ini
-COPY files/php.ini /usr/local/etc/php/
+COPY ./files/php.ini /usr/local/etc/php/
 
 #Clone all the Omeka-S Modules
 RUN cd /var/www/html/modules && curl "https://api.github.com/users/omeka-s-modules/repos?page=$PAGE&per_page=100" | grep -e 'git_url*' | cut -d \" -f 4 | xargs -L1 git clone
 #Clone all the Omeka-S Themes
 RUN cd /var/www/html/themes && rm -r default && curl "https://api.github.com/users/omeka-s-themes/repos?page=$PAGE&per_page=100" | grep -e 'git_url*' | cut -d \" -f 4 | xargs -L1 git clone
 # copy over the database and the apache config
-COPY ./files/database.ini /var/www/html/config/database.ini
+COPY database.py /var/www/html/database.py
+#COPY ./files/database.ini /var/www/html/config/database.ini
 COPY ./files/apache-config.conf /etc/apache2/sites-enabled/000-default.conf
 COPY ./imagemagick-policy.xml /etc/ImageMagick/policy.xml
 # set the file-rights
