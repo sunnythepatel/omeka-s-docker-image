@@ -31,7 +31,7 @@ services:
     ports:
       - 80:80
     environment:
-      user: : db
+      user: db
       password: exampleuser
       dbname: examplepass
       host: exampledb
