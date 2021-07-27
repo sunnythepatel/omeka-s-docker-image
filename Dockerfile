@@ -27,6 +27,10 @@ RUN apt-get update && \
 RUN pecl install mcrypt-1.0.3
 RUN docker-php-ext-enable mcrypt
 
+RUN apt-get install -y python3.6
+RUN python3 -V
+
+
 RUN docker-php-ext-install -j$(nproc) iconv pdo pdo_mysql gd mysqli zip
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 
